@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Demo Web Application</title>
+    <link th:rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script>
+        function previewImage(input) {
+            var preview = document.getElementById('preview');
+            var imageUrl = input.value;
+
+            if (imageUrl) {
+                preview.src = imageUrl;
+                preview.style.display = 'block';
+            } else {
+                preview.src = '';
+                preview.style.display = 'none';
+            }
+        }
+    </script>
+</head>
+<body>
+<div th:insert="~{fragments/header :: header}"></div>
+<div class="container w-50 p-3">
+    <h1 class="display-5">Add Product</h1>
+    <form action="#" th:action="@{/products/add}" method="POST" enctype="multipart/form-data">
+
+        <div class="mb-3">
+            <label for="category">Category</label>
+            <select class="form-control" id="category" name="category" required>
+                <option value="" selected disabled hidden>Select Category...</option>
+                <option>Bed</option>
+                <option>Chair</option>
+                <option>Table</option>
+                <option>Misc</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="productName">productName</label>
+            <input id="productName" type="input" class="form-control" name="productName" maxlength="50" required>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col">
+                <label for="productPrice">Product Pricr</label>
+                <input id="productPrice" type="number" class="form-control" name="productPrice" required>
+            </div>
+            <div class="col">
+                <label for="productStock">Product Stock</label>
+                <input id="productStock" type="number" class="form-control" name="productStock" required>
+            </div>
+
+        </div>
+
+        <div class="mb-3">
+            <label for="productDesc">Product Description</label>
+            <textarea id="productDesc" class="form-control" name="productDesc" minlength="40" maxlength="200" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="productImageUrl">Product Image URL</label>
+            <div style="display: flex; justify-content: center;">
+                <input id="productImageUrl" type="text" class="form-control" name="productImageUrl"
+                       placeholder="Enter Image URL" onchange="previewImage(this)">
+            </div>
+            <br>
+            <div style="display: flex; justify-content: center;">
+                <img id="preview" src="#" alt="Product Image" style="max-width: 50%; max-height: 50%; display: none;">
+            </div>
+        </div>
+
+        <button id="submit-button" type="submit" class="btn btn-primary">Add Product</button>
+    </form>
+</div>
+
+</body>
+</html>

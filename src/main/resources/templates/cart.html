@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Cart</title>
+    <link th:rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- CSS for product table formatting -->
+    <style>
+        .row.mb-4:not(:last-child) {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        #order {
+            border: 1px solid #ddd;
+            padding: 5px;
+            margin: 5px;
+        }
+
+        .trash-can {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<!-- Include header -->
+<div th:insert="~{fragments/header :: header}"></div>
+
+<!-- Cart content mt-5 -->
+<div class="container mt-3">
+    <h2>Your Cart</h2>
+    <div th:if="${cart == null or cart.cartItems == null or #lists.isEmpty(cart.cartItems)}">
+        <!-- ถ้า cart ยังไม่ถูกสร้างหรือไม่มีสินค้าในตะกร้า -->
+        <p>Your cart is empty.</p>
+    </div>
+
+
+    <!--    th:if="${cart != null and not #lists.isEmpty(cart.cartItems)}"-->
+    <div th:if="${cart != null and cart.cartItems != null and  not #lists.isEmpty(cart.cartItems)}">
+        <!-- Loop through cart items -->
+        <div class="row">
+            <div class="col-8">
+                <div th:each="cartItem, cartIndex : ${cart.cartItems}" class="row mb-4"
+                     th:attr="data-cart-item-id=${cartItem.cartItemId}">
+                    <div class="row">
+
+                        <div class="col-2 p-0 d-flex align-items-center">
+                            <!-- Product image -->
+                            <img th:src="${cartItem.product.productImageUrl}" class="p-0 img-fluid img-thumbnail"
+                                 alt="Product Image">
+                        </div>
+                        <div class="col-9">
+
+                            <!-- Product name -->
+                            <h4 th:text="${cartItem.product.productName}"></h4>
+                            <!-- Product price -->
+                            <p th:text="'Price: $' + ${cartItem.product.productPrice}"></p>
+
+                            <div class="row">
+                                <!-- Quantity buttons -->
+                                <div class="col col-2">
+                                    <p>Quantity</p>
+                                </div>
+                                <!-- ใน HTML ที่แสดงรายการสินค้า -->
+                                <div class="col">
+                                    <div class="row">
+                                        <div class="col p-0">
+                                            <form th:action="@{/cartItem/updateQuantity}" method="POST">
+                                                <!-- ลด Quantity -->
+                                                <!-- th:data-cartItemId="${cartItem.cartItemId}"   class="updateQuantityForm"-->
+                                                <button class="btn btn-outline-secondary float-end"
+                                                        th:data-cart-item-id="${cartItem.cartItemId}"
+                                                        th:data-quantity="-1"
+                                                        onclick="updateQuantity(this)">
+                                                    -
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        <div class="col p-0">
+                                            <form th:action="@{/cartItem/updateQuantityFromTagInput}" method="POST">
+                                                <input type="text" class="form-control text-center"
+
+                                                       th:value="${cartItem.quantity}"
+                                                       th:data-cart-item-id="${cartItem.cartItemId}"
+                                                       oninput="validateNumericInput(this)"
+                                                       onblur="updateQuantityFromTagInput(this)"
+                                                       onkeydown="return event.key !== 'Enter';">
+                                            </form>
+                                        </div>
+
+                                        <div class="col p-0">
+                                            <!-- เพิ่ม Quantity -->
+                                            <form th:action="@{/cartItem/updateQuantity}" method="POST">
+                                                <!-- ลด Quantity -->
+                                                <!--                                        th:data-cartItemId="${cartItem.cartItemId}"   class="updateQuantityForm"-->
+                                                <button class="btn btn-outline-secondary"
+                                                        th:data-cart-item-id="${cartItem.cartItemId}"
+                                                        th:data-quantity="1"
+                                                        onclick="updateQuantity(this)">
+                                                    +
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <!-- Total price -->
+                                    <p class="float-end"
+                                       th:text="'Price: ฿' + (${cartItem.product.productPrice} * ${cartItem.quantity})"
+                                       th:attr="data-total-price=${cartItem.product.productPrice * cartItem.quantity}"
+                                       id="totalPrice-${cartItem.cartItemId}">
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1 p-0">
+                            <!-- Remove button -->
+                            <form th:action="@{/cartItem/deleteItemInCartItem}" method="POST">
+                                <span class="remove-button float-end"
+                                      th:data-cart-item-id="${cartItem.cartItemId}"
+                                      onclick="removeCartItem(this)">
+                                     <img class="trash-can"
+                                          src="https://cdn2.iconfinder.com/data/icons/basic-thin-line-color/21/24-256.png"
+                                          alt="Trash Can" width=25px>
+                                </span>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col ms-3 p-2">
+                <div class="block m-0 p-2" id="order">
+                    <h5>
+                        Order Summary
+                    </h5>
+                    <h6>
+                        payment details
+                    </h6>
+                    <div class="row">
+                        <div class="col">
+                            <p>Total</p>
+                        </div>
+                        <div class="col p-1 float-end">
+                            <p id="totalPrice">฿0.00</p>
+                        </div>
+                    </div>
+                    <form th:action="@{/PurchaseOrder/createOrder}" method="POST">
+                        <button type="submit" class="btn btn-primary">Checkout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Calculate and display the total price
+        calculateTotal();
+
+        // Function to calculate and display the total price
+        function calculateTotal() {
+            var totalPrice = 0;
+
+            // Loop through each cart item
+            var cartItems = document.querySelectorAll('[data-total-price]');
+            cartItems.forEach(function (cartItem) {
+                totalPrice += parseFloat(cartItem.getAttribute('data-total-price'));
+            });
+
+            // Display the total price
+            var totalElement = document.getElementById('totalPrice');
+            if (totalElement) {
+                totalElement.textContent = '฿' + totalPrice.toFixed(2);
+            }
+        }
+    });
+</script>
+<script>
+    function updateQuantity(button) {
+
+        var cartItemId = button.getAttribute('data-cart-item-id');
+        var quantityChange = button.getAttribute('data-quantity');
+        // ประกาศ form element
+        var form = button.closest('form');
+
+        // สร้าง input element ที่จะเก็บค่า cartItemId
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'cartItemId';
+        input.value = cartItemId;
+
+        // เพิ่ม input element เข้าไปใน form
+        form.appendChild(input);
+
+        // สร้าง input element ที่จะเก็บค่า quantityChange
+        input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'quantityChange';
+        input.value = quantityChange;
+
+        // เพิ่ม input element เข้าไปใน form
+        form.appendChild(input);
+
+        // ส่ง form
+        form.submit();
+
+    }
+
+    function updateQuantityFromTagInput(button) {
+        // ประกาศ form element
+        var cartItemId = button.getAttribute('data-cart-item-id');
+        var quantityChange = button.value;
+        // ประกาศ form element
+        var form = button.closest('form');
+
+        // สร้าง input element ที่จะเก็บค่า cartItemId
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'cartItemId';
+        input.value = cartItemId;
+
+        // เพิ่ม input element เข้าไปใน form
+        form.appendChild(input);
+
+        // สร้าง input element ที่จะเก็บค่า quantityChange
+        input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'quantityChange';
+        input.value = quantityChange;
+
+        // เพิ่ม input element เข้าไปใน form
+        form.appendChild(input);
+
+        // ส่ง form
+        form.submit()
+    }
+
+    function validateNumericInput(input) {
+        // เลือกเฉพาะตัวเลขจากคีย์บอร์ด
+        input.value = input.value.replace(/[^0-9]/g, '');
+    }
+
+    function removeCartItem(button) {
+        var cartItemId = button.getAttribute('data-cart-item-id');
+
+        var form = button.closest('form');
+        // console.log(form)
+
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'cartItemId';
+        input.value = cartItemId;
+        // console.log(input.value)
+
+        form.appendChild(input);
+
+
+        form.submit();
+    }
+
+</script>
+</body>
+</html>

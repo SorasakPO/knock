@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Demo Web Application</title>
+    <link th:rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+
+    </style>
+</head>
+<body>
+<div th:insert="~{fragments/header :: header}"></div>
+<div class="container mt-3">
+    <h2>Order All</h2>
+    <table class="table table-bordered table-striped table-hover">
+        <thead class="thead-dark">
+        <tr style="text-align: center; vertical-align: top; " class="table-secondary">
+            <th>DateTime</th>
+            <th>Status</th>
+            <th>Owner</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${orders}"
+            th:attr="data-order-id=${order.getOrderId()}">
+            <td th:text="${#temporals.format(order.timestamp, 'dd/MM/yyyy HH:mm')}" style="width:30%"></td>
+            <td th:text="${order.status}" style="width:30%"></td>
+            <td th:text="${order.owner.getFirstName()} + ' ' + ${order.owner.getLastName()}" style="width:30%"></td>
+            <td style="text-align: center" >
+                <!--                <button class="btn btn btn-secondary btn-sm"><i class="fa fa-search"></i></button>-->
+                <div class="row">
+                    <div class="col p-0">
+                        <form th:action="@{/admin/orders/finish}"
+                              method="POST">
+                            <button class="btn btn btn-success btn-sm"
+                                    th:data-order-id="${order.getOrderId}"
+                                    onclick="finish(this)">
+                                <i class="fa fa-check-square"></i>
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col p-0">
+                        <form th:action="@{/admin/orders/editStatus}"
+                              method="POST">
+                            <button class="btn btn btn-warning btn-sm"
+                                    th:data-order-id="${order.getOrderId}"
+                                    onclick="editStatus(this)">
+                                <i class="fa fa-pencil"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+<script>
+    function finish(button) {
+        var orderId = button.getAttribute('data-order-id');
+        // console.log(orderId);
+
+        var form = button.closest('form');
+        // console.log(form)
+
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'orderId';
+        input.value = orderId;
+
+        form.appendChild(input);
+
+        form.submit();
+    }
+
+    function editStatus(button) {
+        var orderId = button.getAttribute('data-order-id');
+        // console.log(orderId);
+
+        var form = button.closest('form');
+        // console.log(form)
+
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'orderId';
+        input.value = orderId;
+
+        form.appendChild(input);
+
+        form.submit();
+    }
+</script>
+</html>

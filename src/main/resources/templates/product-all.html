@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Demo Web Application</title>
+    <link th:rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</head>
+<body>
+<div th:insert="~{fragments/header :: header}"></div>
+<div class="container mt-3 px-5">
+    <h2 class="display-6">Product</h2>
+    <div class="row">
+        <!-- Thymeleaf iteration to display products -->
+        <div th:each="product : ${products}" class="col-md-3 my-2">
+            <div class="card">
+
+                <!-- Product Image -->
+                <img th:src="${product.productImageUrl}" class="card-img-top" alt="Product Image">
+                <div class="card-body p-2">
+                    <!-- Product Name -->
+                    <h5 class="card-title" th:text="${product.productName}"></h5>
+                    <!-- Product Description (showing only the first 10 characters) -->
+                    <p class="card-text"
+                       th:text="${product.productDesc.length() > 30 ? product.productDesc.substring(0, 30): product.productDesc}"></p>
+                    <!-- Product Price -->
+                    <p class="card-text"
+                       th:text="'Price: '+${#numbers.formatDecimal(product.productPrice, 1, 'COMMA', 2, 'POINT')} + ' Bath.'">
+                    </p>
+                </div>
+
+                <div class="text-center">
+                    <form th:action="@{/products/addToCart}" method="post">
+                        <input type="hidden" name="productId" th:value="${product.productId}" />
+                        <button type="submit" class="btn btn-primary mb-3 mx-auto">
+                            ADD TO CART
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

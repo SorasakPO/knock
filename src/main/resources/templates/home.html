@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="UTF-8">
+    <title>Demo Web Application</title>
+    <link th:rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+
+    <style>
+        header{
+            /*background-color: #333;*/
+            background-image: url(https://img.freepik.com/free-photo/cozy-modern-loft-with-comfortable-design-elements-generated-by-ai_188544-28044.jpg?t=st=1699271313~exp=1699274913~hmac=cbb7d47d93576e574bb94c076546e43c7e6aec6f5a7e23d6b351cca2eef98e9c&w=1060);
+            background-position: center center;
+            background-size: cover;
+            color: white;
+            height: 92vh;
+            /*width: 100vw;*/
+            text-align: center;
+            padding: 2rem;
+            padding-top: 12rem;
+        }
+        header h1{
+            font-size: 3rem;
+        }
+        header p{
+            margin: 1rem 0;
+        }
+        header .btn{
+            display: inline-block;
+            text-decoration: none;
+            background: #f4f4f4;
+            color: black;
+            padding: 0.75rem 2rem;
+        }
+    </style>
+</head>
+<body>
+<div th:insert="~{fragments/header :: header}"></div>
+<header>
+    <h1>Wecome to Website</h1>
+    <p>Where we redefine home living with exquisite furniture that combines style, comfort, and affordability. Discover a curated collection of pieces designed to transform your house into a haven of elegance and functionality. We're here to help you create the home of your dreams, one beautiful piece at a time.</p>
+</header>
+</body>
+</html>
